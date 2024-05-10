@@ -36,6 +36,11 @@ app.options("*", (req, res) => {
   res.sendStatus(200);
 });
 
+app.get("/", (req, res) => {
+  logger.info("roota is: ", req.url);
+  res.send("Hello World!");
+})
+
 app.all("/proxy", async (req, res) => {
   const url = req.query.url;
   logger.info("param url is: ", url);
