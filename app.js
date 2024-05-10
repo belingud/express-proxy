@@ -36,14 +36,18 @@ app.options("*", (req, res) => {
   res.sendStatus(200);
 });
 
-app.get("/", (req, res) => {
+app.get("/hello", (req, res) => {
   logger.info("roota is: ", req.url);
   res.send("Hello World!");
 })
 
-app.all("/proxy", async (req, res) => {
+app.all("/", async (req, res) => {
   const url = req.query.url;
   logger.info("param url is: ", url);
+  if (!url) {
+    res.status(400).send("NOT IN SERVICE");
+    return;
+  }
 
   try {
     let response;
