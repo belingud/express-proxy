@@ -1,6 +1,6 @@
-import express from "express";
-import morgan from "morgan";
-import axios from "axios";
+let express = require("express");
+let morgan = require("morgan");
+let axios = require("axios");
 
 const app = express();
 
