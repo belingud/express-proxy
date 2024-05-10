@@ -5,6 +5,15 @@ const https = require("https");
 // disable certificate verification
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = false;
 
+const winston = require("winston");
+const logger = winston.createLogger({
+  transports: [new winston.transports.Console()],
+  format: winston.format.combine(
+    winston.format.timestamp(),
+  ),
+});
+logger.info(`Runing environment: ${process.env.NODE_ENV}`);
+
 const app = express();
 
 app.use(express.json());
@@ -13,7 +22,7 @@ app.use(morgan("dev"));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header("Access-Control-Allow-Headers", "*");
   res.header("Access-Control-Allow-Credentials", "true");
   if (req.method === "OPTIONS") {
@@ -29,7 +38,7 @@ app.options("*", (req, res) => {
 
 app.all("/proxy", async (req, res) => {
   const url = req.query.url;
-  console.log("param url is: ", url);
+  logger.info("param url is: ", url);
 
   try {
     let response;
@@ -48,10 +57,10 @@ app.all("/proxy", async (req, res) => {
     } else if (req.method === "DELETE") {
       response = await instance.delete(url, { headers: req.headers });
     }
-
+    
     res.send(response.data);
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).send(error.stack);
   }
 });
