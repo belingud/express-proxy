@@ -3,8 +3,8 @@
   "license": "UNLICENSED",
   "packageManager": "yarn@1.22.22",
   "scripts": {
-    "start": "node ./dist/app.js",
-    "build": "esbuild ./src/app.js --bundle --outfile=dist/app.js --minify --sourcemap --platform=node"
+    "start": "node ./bin/www",
+    "build": "node scripts/build.js"
   },
   "dependencies": {
     "axios": "^1.6.8",
