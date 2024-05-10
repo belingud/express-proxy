@@ -1,6 +1,9 @@
 let express = require("express");
 let morgan = require("morgan");
 let axios = require("axios");
+const https = require("https");
+// disable certificate verification
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = false;
 
 const app = express();
 
@@ -26,23 +29,30 @@ app.options("*", (req, res) => {
 
 app.all("/proxy", async (req, res) => {
   const url = req.query.url;
+  console.log("param url is: ", url);
 
   try {
     let response;
+    const instance = axios.create({
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+      }),
+    });
 
     if (req.method === "GET") {
-      response = await axios.get(url, { headers: req.headers });
+      response = await instance.get(url, { headers: req.headers });
     } else if (req.method === "POST") {
-      response = await axios.post(url, req.body, { headers: req.headers });
+      response = await instance.post(url, req.body, { headers: req.headers });
     } else if (req.method === "PUT") {
-      response = await axios.put(url, req.body, { headers: req.headers });
+      response = await instance.put(url, req.body, { headers: req.headers });
     } else if (req.method === "DELETE") {
-      response = await axios.delete(url, { headers: req.headers });
+      response = await instance.delete(url, { headers: req.headers });
     }
 
     res.send(response.data);
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error(error);
+    res.status(500).send(error.stack);
   }
 });
 
@@ -52,10 +62,8 @@ app.all("/proxy", async (req, res) => {
 
 module.exports = app;
 
-const main = async () => {
+if (process.env.NODE_ENV === "development") {
   app.listen(process.env.PORT || 3000, async () => {
     console.log("Server started on port " + (process.env.PORT || 3000));
   });
-};
-
-// main();
+}
