@@ -69,7 +69,6 @@ function parseUrlParam(req) {
 
 app.all("/", (req, res) => {
     const proxyUrl = parseUrlParam(req);
-    console.log("in proxy api: ", proxyUrl);
     req.url = proxyUrl.pathname + proxyUrl.search;
     console.log("new req.url is: ", req.url);
 
